@@ -1,3 +1,8 @@
+/* //TODO: my bio hw
+TODO: Import driver control
+TODO: Create an autonomous program (pull start from main_c)
+TODO: Create a switch ui for the driver (or me or whoever's doing skills)
+*/
 #pragma region VEXcode Generated Robot Configuration
 // Make sure all required headers are included.
 #include <stdio.h>
@@ -163,7 +168,7 @@ task rc_auto_loop_task_Controller1(rc_auto_loop_function_Controller1);
 /* #region project info */
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
-/*    Module:       main(S).cpp                                                  */
+/*    Module:       main(S).cpp                                               */
 /*    Author:       TV                                                        */
 /*    Created:      1/21/2026, 1:05:06 PM                                     */
 /*    Description:  V5 project                                                */
