@@ -6,7 +6,7 @@
 //TODO: tune turning speed
 //TODO: add more comments throughout code
 //TODO: add global interrupt for left button
-//TODO: Relocate code to skills
+//// Relocate code to skills
 //// replace "magic numbers" with defined constants where applicable
 
 #pragma region VEXcode Generated Robot Configuration
