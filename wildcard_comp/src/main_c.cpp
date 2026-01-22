@@ -1,6 +1,7 @@
 //TODO: future additions
 //TODO: add functional autonomous for skills
 //TODO: fix scoring motor (possible hardware issue)
+//// Code ported to my PC at home :)
 //// add extra motor for lift mechanism (PORT15)
 //TODO: add brain inertial (possibly) for accurate autonomous driving
 //TODO: tune turning speed
