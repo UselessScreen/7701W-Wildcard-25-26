@@ -148,18 +148,11 @@ int rc_auto_loop_function_Controller1() {
   return 0;
 }
 
-volatile bool interrupt = false;
-
-void onLeftPressed() {
-  // Function to be called when the left button is pressed
-  interrupt = true;
+// A flag checking for whether a function has run for a minute
+timer t;
+bool minute(){
+  return t.time(sec)<=60;
 }
-
-void controlSet() {
-  // Controller setup
-  Controller1.ButtonLeft.pressed(onLeftPressed);
-}
-
 // Initialise the controller task --> Controller1
 task rc_auto_loop_task_Controller1(rc_auto_loop_function_Controller1);
 
@@ -235,11 +228,12 @@ void ui() {
 void drive() {
   // Driver control code
   screenReset();
-  interrupt = false; // reset interrupt flag
   
   Brain.Screen.print("Driver Control Initialized");
   while (true) {
-   
+    // Checks if  
+    if (!minute()) break;
+
     // Scoring control
     if (Controller1.ButtonR1.pressing()) {
       intakeMotor.setVelocity(intakeSpeed, percent);
@@ -266,6 +260,8 @@ void drive() {
     //! Add onto ALL while loops to prevent wasted CPU cycles
     wait(20, msec);
   }
+  //function exit on loop exit
+  return;
 }
 
 void autonomous(){
@@ -283,20 +279,13 @@ int main() {
   
   //Begin Project Code
   ui();                             //Ask user which program to run
-  //!Rough implement (more concise?)
-  // while (true){
-  //   Controller1.ButtonLeft.pressed(drive);
-  //   Controller1.ButtonRight.pressed(autonomous);
-  // }
-  // More understandable implement //!(maybe unnecesarily complex)
-  timer t;
   t.reset();
   //Decide on either auton or driver control based on controller input
   while (true){
-    if (autonFlag == true && t.time(sec) <= 60){
+    if (autonFlag == false){
       drive();
     } 
-    else if (autonFlag == false && t.time(sec) <= 60) {
+    else if (autonFlag == true) {
       autonomous();
       
     }
