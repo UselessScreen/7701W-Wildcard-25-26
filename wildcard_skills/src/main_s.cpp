@@ -155,7 +155,7 @@ timer t;
 
 // A flag checking for whether a function has run for a minute
 bool minute(){
-  return t.time(sec)<=60;
+  return t.time(sec)<=20;
 }
 
 // Initialise the controller task --> Controller1
@@ -286,6 +286,7 @@ void drive() {
 #define TC(x) do {x; if (minute()) return;} while(false);
 
 void autonomous(){
+  t.reset();
   TC(wait(50,msec));
   TC(RemoteControlCodeEnabled = false);
   TC(screenReset());
