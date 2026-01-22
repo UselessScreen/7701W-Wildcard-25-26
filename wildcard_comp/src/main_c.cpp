@@ -1,10 +1,12 @@
 //TODO: future additions
 //TODO: add functional autonomous for skills
 //TODO: fix scoring motor (possible hardware issue)
+//TODO: dig in yo butt
 //// Code ported to my PC at home :)
 //// add extra motor for lift mechanism (PORT15)
 //TODO: add brain inertial (possibly) for accurate autonomous driving
 //TODO: tune turning speed
+//TODO: make the robot work and the entire notebook too
 //TODO: add more comments throughout code
 //TODO: add global interrupt for left button
 //// Relocate code to skills
@@ -305,7 +307,7 @@ void matchAutonomous() {
 }
 
 
-
+// If you ever see this then msg me "big ahh pih"
 
 int main() {
   //* Initialize the VEXcode system DO NOT REMOVE!
