@@ -150,13 +150,16 @@ int rc_auto_loop_function_Controller1() {
 }
 
 // Define a continuous timer to check 
-// dig in you butt twin
+// dig in you twin - jack
 timer t;
 
 // A flag checking for whether a function has run for a minute
 bool minute(){
   return t.time(sec)<=20;
 }
+
+//Macro for running code after every line
+#define TC(x) do {x; if (minute()) return;} while(false);
 
 // Initialise the controller task --> Controller1
 task rc_auto_loop_task_Controller1(rc_auto_loop_function_Controller1);
@@ -177,13 +180,14 @@ task rc_auto_loop_task_Controller1(rc_auto_loop_function_Controller1);
 //* Constants and Globals
 const float bufferS = 2.25;                   // Buffer time in seconds
 const int buffer2 = bufferS * 1000 + 10;     // Buffer time in milliseconds + 10 extra for safety
-const int intakeSpeed = 50;                 // Intake motor speed
-const int scoreSpeed = 100;                // Scoring motor speed
-const int counterSpeed = 100;             // Counter motor speed
+const int intakeSpeed = 15;                 // Intake motor speed
+const int scoreSpeed = 80;                 // Scoring motor speed
+const int counterSpeed = 20;              // Counter motor speed
 const int turnSpeed = 50;                // Drivetrain turning speed
 const int tile = 600;                   // One tile distance in mm 
 const int driveSpeed = 100;            // Drivetrain speed
 bool autonFlag = false;               // Check for autonomous or driving control
+bool divineGeneralMahoraga = false;  //! OBLITERATE (literlly decimates the code on summon)
 
 
 //* Misc functions to call later 
@@ -193,7 +197,6 @@ void driveSetup() {
   Drivetrain.setTurnVelocity(turnSpeed, percent);
   intakeMotor.setVelocity(intakeSpeed, percent);
   scoreMotor.setVelocity(scoreSpeed, percent);
-  //todo liftMotor.setVelocity(liftSpeed, percent);
 }
 
 void screenReset() {
@@ -278,12 +281,17 @@ void drive() {
     //! Add onto ALL while loops to prevent wasted CPU cycles
     wait(20, msec);
   }
-  //function exit on loop exit
+  /*
+  * With this treasure...
+  * I summon...
+  * Divine General
+  ! Mahoraga
+  */
+  divineGeneralMahoraga = true;
   return;
 }
 
-//Macro for running code after every line
-#define TC(x) do {x; if (minute()) return;} while(false);
+
 
 void autonomous(){
   t.reset();
@@ -300,21 +308,23 @@ int main() {
   vexcodeInit();
   
   //Begin Project Code
+  
   ui();                                //Ask user which program to run
   t.reset();
   //Decide on either auton or driver control based on controller input
   while (true){
-    if (autonFlag == false){
+    if (divineGeneralMahoraga == true) {
+    // Once the timer is up //! summon mahoraga
+      return 0;
+    } 
+    else if (autonFlag == false /*on left press*/){
       drive();
     } 
-    else if (autonFlag == true) {
-      autonomous();
-      
+    else if (autonFlag == true /*on right press*/) {
+      autonomous();  
     }
-    // Once the timer is up exit the loop and end the program
-    else {
-      break;
-    }
+   
+
   }
-  return 0;
+  
 }
