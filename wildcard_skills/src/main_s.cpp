@@ -1,7 +1,6 @@
 /* //TODO: my bio hw
-TODO: Import driver control
 TODO: Create an autonomous program (pull start from main_c)
-TODO: Create a switch ui for the driver (or me or whoever's doing skills)
+//TODO: Create a switch ui for the driver (or me or whoever's doing skills)
 */
 #pragma region VEXcode Generated Robot Configuration
 // Make sure all required headers are included.
@@ -176,7 +175,133 @@ task rc_auto_loop_task_Controller1(rc_auto_loop_function_Controller1);
 /*----------------------------------------------------------------------------*/
 /* #endregion */
 
+//* Constants and Globals
+const float bufferS = 2.25;                   // Buffer time in seconds
+const int buffer2 = bufferS * 1000 + 10;     // Buffer time in milliseconds + 10 extra for safety
+const int intakeSpeed = 50;                 // Intake motor speed
+const int scoreSpeed = 100;                // Scoring motor speed
+const int counterSpeed = 100;             // Counter motor speed
+const int turnSpeed = 50;                // Drivetrain turning speed
+const int tile = 600;                   // One tile distance in mm 
+const int driveSpeed = 100;            // Drivetrain speed
+bool autonFlag = false;
+
+//* Misc functions to call later 
+void driveSetup() {
+  // Motor setup
+  Drivetrain.setDriveVelocity(driveSpeed, percent);
+  Drivetrain.setTurnVelocity(turnSpeed, percent);
+  intakeMotor.setVelocity(intakeSpeed, percent);
+  scoreMotor.setVelocity(scoreSpeed, percent);
+  //todo liftMotor.setVelocity(liftSpeed, percent);
+}
+
+void screenReset() {
+  // Resets the brain screen to default state
+  Brain.Screen.clearScreen();
+  Brain.Screen.setCursor(1,1);
+}
+
+void stopAllMotors() {
+  // Stops all motors
+  LeftDriveSmart.stop();
+  RightDriveSmart.stop();
+  intakeMotor.stop();
+  scoreMotor.stop();
+  Drivetrain.stop();
+}
+
+//* UI on brain to allow autonomous or driving selection
+void ui() {
+  screenReset();
+  Brain.Screen.print("Press LEFT for driving, RIGHT for autonomous");
+  Brain.Screen.newLine();
+  while (true){
+   if (Controller1.ButtonLeft.pressing() == true)
+    {
+      Brain.Screen.print("LEFT pressed; driving init...");
+      autonFlag = false;
+      break;
+    } else if (Controller1.ButtonDown.pressing() == true){
+      Brain.Screen.print("RIGHT pressed; auton init...");
+      autonFlag == true;
+      break;
+    }
+  }
+  return;
+}
+
+//* Drive and Autonomous functions
+void drive() {
+  // Driver control code
+  screenReset();
+  interrupt = false; // reset interrupt flag
+  
+  Brain.Screen.print("Driver Control Initialized");
+  while (true) {
+   
+    // Scoring control
+    if (Controller1.ButtonR1.pressing()) {
+      intakeMotor.setVelocity(intakeSpeed, percent);
+      scoreMotor.setVelocity(counterSpeed, percent);
+      intakeMotor.spin(forward);
+      scoreMotor.spin(reverse); // to prevent jamming while intaking
+
+     }
+    
+
+    // Intake control
+    else if (Controller1.ButtonL1.pressing()) {
+      scoreMotor.setVelocity(scoreSpeed, percent);
+      scoreMotor.spin(forward);
+
+
+    } 
+    // Stops motors in absence of input
+    else {
+      scoreMotor.stop();
+      intakeMotor.stop();
+    }
+
+    //! Add onto ALL while loops to prevent wasted CPU cycles
+    wait(20, msec);
+  }
+}
+
+void autonomous(){
+  wait(50,msec);
+  RemoteControlCodeEnabled = false;
+  screenReset();
+  Brain.Screen.print("Autonomous Initialized");
+  
+
+}
 
 int main() {
-
+  //Initialize rand() DO NOT REMOVE
+  vexcodeInit();
+  
+  //Begin Project Code
+  ui();                             //Ask user which program to run
+  //!Rough implement (more concise?)
+  // while (true){
+  //   Controller1.ButtonLeft.pressed(drive);
+  //   Controller1.ButtonRight.pressed(autonomous);
+  // }
+  // More understandable implement //!(maybe unnecesarily complex)
+  timer t;
+  t.reset();
+  while (true){
+    if (autonFlag == true && t.time(sec) <= 60){
+      drive();
+    } 
+    else if (autonFlag == false && t.time(sec) <= 60) {
+      autonomous();
+      
+    }
+    else {
+      break;
+    }
+  }
+  return 0;
 }
