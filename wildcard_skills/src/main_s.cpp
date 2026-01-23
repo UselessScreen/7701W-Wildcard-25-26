@@ -1,6 +1,6 @@
 /* //TODO: my bio hw
 TODO: Create an autonomous program (pull start from main_c)
-TODO: Disable auton after a minute
+//TODO: Disable auton after a minute
 //TODO: Create a switch ui for the driver (or me or whoever's doing skills)
 */
 #pragma region VEXcode Generated Robot Configuration
@@ -149,15 +149,23 @@ int rc_auto_loop_function_Controller1() {
   return 0;
 }
 
-// A flag checking for whether a function has run for a minute
+// Define a continuous timer to check 
+// dig in you twin - jack
 timer t;
+
+// A flag checking for whether a function has run for a minute
 bool minute(){
-  return t.time(sec)<=60;
+  return t.time(sec)<=20;
 }
+
+//Macro for running code after every line
+#define TC(x) do {x; if (minute()) return;} while(false);
+
 // Initialise the controller task --> Controller1
 task rc_auto_loop_task_Controller1(rc_auto_loop_function_Controller1);
 
 #pragma endregion VEXcode Generated Robot Configuration
+
 /* #region project info */
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
@@ -172,22 +180,45 @@ task rc_auto_loop_task_Controller1(rc_auto_loop_function_Controller1);
 //* Constants and Globals
 const float bufferS = 2.25;                   // Buffer time in seconds
 const int buffer2 = bufferS * 1000 + 10;     // Buffer time in milliseconds + 10 extra for safety
-const int intakeSpeed = 50;                 // Intake motor speed
-const int scoreSpeed = 100;                // Scoring motor speed
-const int counterSpeed = 100;             // Counter motor speed
+const int intakeSpeed = 15;                 // Intake motor speed
+const int scoreSpeed = 80;                 // Scoring motor speed
+const int counterSpeed = 20;              // Counter motor speed
 const int turnSpeed = 50;                // Drivetrain turning speed
 const int tile = 600;                   // One tile distance in mm 
 const int driveSpeed = 100;            // Drivetrain speed
-bool autonFlag = false;
+bool autonFlag = false;               // Check for autonomous or driving control
+bool divineGeneralMahoraga = false;  //! OBLITERATE (literlly decimates the code on summon)
+
 
 //* Misc functions to call later 
+void buffer() {
+  //! The legendary fake init function that does nothing
+  //* but gives time to setup -- robot experiences inconsistent communication issues when removed
+  timer t;
+  t.reset();
+  int i = 0;
+
+  while (t.time(sec) <= bufferS) {
+    //Simple loading animation just for filler
+  Brain.Screen.setCursor(1,1);
+  Brain.Screen.print("Parthogenesis.init()");    
+    string dots = string(i, '.');
+    Brain.Screen.print(dots.c_str());
+    i = (i + 1) % 4;
+    wait(250, msec);
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1,21);
+  }
+  //Remove loading text after buffer completed
+  screenReset();
+}
+
 void driveSetup() {
   // Motor setup
   Drivetrain.setDriveVelocity(driveSpeed, percent);
   Drivetrain.setTurnVelocity(turnSpeed, percent);
   intakeMotor.setVelocity(intakeSpeed, percent);
   scoreMotor.setVelocity(scoreSpeed, percent);
-  //todo liftMotor.setVelocity(liftSpeed, percent);
 }
 
 void screenReset() {
@@ -210,10 +241,11 @@ void go(double distance) {
   Drivetrain.driveFor(forward, distance,mm);
 }
 
-void tileGo(int tilecount) {
-  //an alternative go(distance) tht deals in tiles rather mm
+void goTile(int tilecount) {
+  //an alternative go(distance) that deals in tiles rather mm
   Drivetrain.driveFor(forward,tilecount*tile,mm);
 }
+
 
 //* UI on brain to allow autonomous or driving selection
 void ui() {
@@ -271,17 +303,25 @@ void drive() {
     //! Add onto ALL while loops to prevent wasted CPU cycles
     wait(20, msec);
   }
-  //function exit on loop exit
+  /*
+  * With this treasure...
+  * I summon...
+  * Divine General
+  ! Mahoraga
+  */
+  divineGeneralMahoraga = true;
   return;
 }
 
-void autonomous(){
-  wait(50,msec);
-  RemoteControlCodeEnabled = false;
-  screenReset();
-  Brain.Screen.print("Autonomous Initialized");
-  Drivetrain.driveFor(tile,mm);
 
+
+void autonomous(){
+  t.reset();
+  TC(wait(50,msec));
+  TC(RemoteControlCodeEnabled = false);
+  TC(screenReset());
+  TC(Brain.Screen.print("Autonomous Initialized"));
+  TC(goTile(1));
 
 }
 
@@ -290,21 +330,23 @@ int main() {
   vexcodeInit();
   
   //Begin Project Code
-  ui();                             //Ask user which program to run
+  
+  ui();                                //Ask user which program to run
   t.reset();
   //Decide on either auton or driver control based on controller input
   while (true){
-    if (autonFlag == false){
+    if (divineGeneralMahoraga == true) {
+    // Once the timer is up //! summon mahoraga
+      return 0;
+    } 
+    else if (autonFlag == false /*on left press*/){
       drive();
     } 
-    else if (autonFlag == true) {
-      autonomous();
-      
+    else if (autonFlag == true /*on right press*/) {
+      autonomous();  
     }
-    // Once the timer is up exit the loop and end the program
-    else {
-      break;
-    }
+   
+
   }
-  return 0;
+  
 }

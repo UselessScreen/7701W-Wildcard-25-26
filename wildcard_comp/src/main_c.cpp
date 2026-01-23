@@ -1,10 +1,12 @@
 //TODO: future additions
 //TODO: add functional autonomous for skills
 //TODO: fix scoring motor (possible hardware issue)
+//TODO: dig in yo butt
 //// Code ported to my PC at home :)
 //// add extra motor for lift mechanism (PORT15)
 //TODO: add brain inertial (possibly) for accurate autonomous driving
 //TODO: tune turning speed
+//TODO: make the robot work and the entire notebook too
 //TODO: add more comments throughout code
 //TODO: add global interrupt for left button
 //// Relocate code to skills
@@ -156,17 +158,6 @@ int rc_auto_loop_function_Controller1() {
   return 0;
 }
 
-volatile bool interrupt = false;
-
-void onLeftPressed() {
-  // Function to be called when the left button is pressed
-  interrupt = true;
-}
-
-void controlSet() {
-  // Controller setup
-  Controller1.ButtonLeft.pressed(onLeftPressed);
-}
 
 // Initialise the controller task --> Controller1
 task rc_auto_loop_task_Controller1(rc_auto_loop_function_Controller1);
@@ -246,16 +237,10 @@ void stopAllMotors() {
 void drive() {
   // Driver control code
   screenReset();
-  interrupt = false; // reset interrupt flag
   
   Brain.Screen.print("Drive code started");
   while (true) {
     
-    // Exit drive code and go to skills autonomous on RIGHT button press
-    if (interrupt) {
-      stopAllMotors();
-      return;
-    }
    
     // Scoring control
     if (Controller1.ButtonR1.pressing()) {
@@ -292,20 +277,14 @@ void matchAutonomous() {
   string msg[] = {"WIP brochacho", "otw broseph", "not yet brotation", "in dev brodude"};
   int randIndex = rand() % 4;
   Brain.Screen.print(msg[randIndex].c_str());
-  // Skip autonomous if interrupt flag is set
-  interrupt = false; // reset interrupt flag
-    if (interrupt) {
-      stopAllMotors();
-      return;
-      }
  
-      // Autonomous actions
+  // Autonomous actions
   Drivetrain.driveFor(forward, 500, mm);
   Drivetrain.driveFor(reverse, 500, mm); 
 }
 
 
-
+// If you ever see this then msg me "big ahh pih"
 
 int main() {
   //* Initialize the VEXcode system DO NOT REMOVE!
@@ -316,15 +295,19 @@ int main() {
   // Autonomous for 15 seconds
   timer t;
   t.reset();
-  if (t.time(sec) < 15) {
-    matchAutonomous();
+  while (true){
+    if (t.time(sec) < 15) {
+      matchAutonomous();
+    }
+    else {
+    stopAllMotors();
+    break;
   }
-  else {
-   stopAllMotors();
   }
-
+  t.reset();
   // Driver control forever 
+  do {
   drive();
-
+  } while(t<=45);
   return 0;
 }
